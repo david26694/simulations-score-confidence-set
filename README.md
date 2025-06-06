@@ -30,7 +30,7 @@ This project provides tools for computing confidence sets in econometric models,
    (All dependencies are managed via `pyproject.toml`.)
 2. Run the main script. For example:
    ```sh
-   python start.py --n_samples 150 300 --n_simulations 10 --confidence_set_methods DRML Score
+   python -m src.start --n_samples 150 300 --n_simulations 10 --confidence_set_methods DRML Score
    ```
    Adjust parameters in `start.py` as needed for your experiments.
 
