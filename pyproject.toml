@@ -1,0 +1,29 @@
+[project]
+name = "weakivdoubleml"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "numpy",
+    "pandas",
+    "scipy",
+    "scikit-learn",
+    "doubleml",
+    "linearmodels",
+    "statsmodels",
+    "tqdm",
+    "ipykernel",
+    "optuna",
+    "pytest>=8.3.5",
+    "plotnine>=0.14.5",
+    "doubleml>=0.10.0",
+    "ruff"
+]
+
+
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"  # or your Python version
+extend-select = ["I"]  # Enable import sorting
