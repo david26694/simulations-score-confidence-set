@@ -41,7 +41,10 @@ src/
    ```sh
    python -m src.start --n_samples 150 300 --n_simulations 10 --confidence_set_methods DRML Score
    ```
-   Adjust parameters in `src/start.py` as needed for your experiments.
+   Adjust parameters in `src/start.py` as needed for your experiments. To reproduce paper simulations, run:
+   ```sh
+   python -m src.start --n_samples 1500 4500 7500 10500 12000 --n_simulations 1000 --confidence_set_methods DRML Score
+   ```
 
 ---
 

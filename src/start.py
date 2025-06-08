@@ -173,7 +173,7 @@ class Simulator:
         self, coverage_summary, instrument_decay, title, file_prefix
     ):
         """Create and save plot for average coverage"""
-        plt.figure(figsize=(10, 6))
+        plt.figure(figsize=(12, 6))
 
         for method in coverage_summary["method"].unique():
             method_data = coverage_summary[coverage_summary["method"] == method]
@@ -196,16 +196,16 @@ class Simulator:
         plt.xlabel("Sample size")
         plt.ylabel("Average coverage")
         plt.title(title)
-        plt.legend(title="Method")
+        plt.legend(title="Method", bbox_to_anchor=(1, 1), loc='upper left')
         plt.grid(True)
 
-        # Save the plot
-        plt.savefig(f"{self.output_dir}/average_coverage_{file_prefix}.png")
+        # Save the plot with tight layout to include legend
+        plt.savefig(f"{self.output_dir}/average_coverage_{file_prefix}.png", bbox_inches='tight')
         plt.close()
 
     def _create_length_plot(self, length_summary, title, file_prefix):
         """Create and save plot for median length"""
-        plt.figure(figsize=(10, 6))
+        plt.figure(figsize=(12, 6))
 
         for method in length_summary["method"].unique():
             method_data = length_summary[length_summary["method"] == method]
@@ -220,11 +220,11 @@ class Simulator:
         plt.xlabel("Sample size")
         plt.ylabel("Median length")
         plt.title(title)
-        plt.legend(title="Method")
+        plt.legend(title="Method", bbox_to_anchor=(1, 1), loc='upper left')
         plt.grid(True)
 
         # Save the plot
-        plt.savefig(f"{self.output_dir}/median_length_{file_prefix}.png")
+        plt.savefig(f"{self.output_dir}/median_length_{file_prefix}.png", bbox_inches='tight')
         plt.close()
 
 
