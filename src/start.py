@@ -165,12 +165,12 @@ class Simulator:
 
         # Create and save plots
         self._create_coverage_plot(
-            coverage_summary, instrument_decay, title_coverage, file_prefix
+            coverage_summary, title_coverage, file_prefix
         )
         self._create_length_plot(length_summary, title_length, file_prefix)
 
     def _create_coverage_plot(
-        self, coverage_summary, instrument_decay, title, file_prefix
+        self, coverage_summary, title, file_prefix
     ):
         """Create and save plot for average coverage"""
         plt.figure(figsize=(12, 6))
