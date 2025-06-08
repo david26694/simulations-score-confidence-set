@@ -184,12 +184,6 @@ class Simulator:
                 marker="o",
             )
 
-        # Set y-axis limits based on instrument decay
-        if instrument_decay:
-            plt.ylim(0, 1)
-        else:
-            plt.ylim(0.8, 1)
-
         plt.axhline(y=0.95, color="r", linestyle="--", label="0.95 Nominal level")
 
         # Customize the plot
