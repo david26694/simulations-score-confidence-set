@@ -184,7 +184,6 @@ class Simulator:
         """Create and save plot for average coverage"""
         fig, ax = plt.subplots(figsize=(6, 4), dpi=150)
 
-        # Define color mapping for methods (method_name, display_name, color, markeredgecolor, markerfacecolor)
         method_styles = [
             ("DRML", "DRML", "black", "black", "black"),
             ("Score", "Score", "lightgray", "black", "lightgray"),
@@ -195,20 +194,24 @@ class Simulator:
                 method_data = coverage_summary[
                     coverage_summary["method"] == method_name
                 ]
-                ax.plot(
+                ax.scatter(
                     method_data["n_samples"],
                     method_data["coverage"],
                     label=display_name,
+                    c=color,
+                    edgecolors=edgecolor,
+                    s=50,
+                    alpha=0.7,
                     marker="o",
-                    markersize=6,
-                    linewidth=2,
+                )
+                ax.plot(
+                    method_data["n_samples"],
+                    method_data["coverage"],
                     color=color,
-                    markerfacecolor=facecolor,
-                    markeredgecolor=edgecolor,
-                    markeredgewidth=1.5 if method_name == "Score" else 1.0,
+                    linewidth=2,
+                    alpha=0.7,
                 )
 
-        # Set y-axis limits conditionally
         if set_coverage_ylim:
             ax.set_ylim(0, 1)
 
@@ -221,13 +224,10 @@ class Simulator:
             alpha=0.5,
         )
 
-        # Customize the plot with seaborn styling
         ax.set_xlabel("Sample size", fontsize=12)
         ax.set_ylabel("Average coverage", fontsize=12)
-        # Place legend inside the plot, top right
         ax.legend(title="Method", loc="upper right", fontsize=10)
         ax.tick_params(axis="both", which="major", labelsize=10)
-
         sns.despine(ax=ax)
         ax.grid(True, which="major", linestyle="--", linewidth=0.5, color="gray")
         plt.tight_layout()
@@ -250,25 +250,28 @@ class Simulator:
         for method_name, display_name, color, edgecolor, facecolor in method_styles:
             if method_name in length_summary["method"].values:
                 method_data = length_summary[length_summary["method"] == method_name]
-                ax.plot(
+                ax.scatter(
                     method_data["n_samples"],
                     method_data["length"],
                     label=display_name,
+                    c=color,
+                    edgecolors=edgecolor,
+                    s=50,
+                    alpha=0.7,
                     marker="o",
-                    markersize=6,
-                    linewidth=2,
+                )
+                ax.plot(
+                    method_data["n_samples"],
+                    method_data["length"],
                     color=color,
-                    markerfacecolor=facecolor,
-                    markeredgecolor=edgecolor,
-                    markeredgewidth=1.5 if method_name == "Score" else 1.0,
+                    linewidth=2,
+                    alpha=0.7,
                 )
 
         ax.set_xlabel("Sample size", fontsize=12)
         ax.set_ylabel("Median length", fontsize=12)
-        # Place legend inside the plot, top right
         ax.legend(title="Method", loc="upper right", fontsize=10)
         ax.tick_params(axis="both", which="major", labelsize=10)
-
         sns.despine(ax=ax)
         ax.grid(True, which="major", linestyle="--", linewidth=0.5, color="gray")
         plt.tight_layout()
