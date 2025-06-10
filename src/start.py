@@ -23,7 +23,7 @@ class Simulator:
         """
         self.output_dir = output_dir
         os.makedirs(output_dir, exist_ok=True)
-        
+
         # Set professional seaborn style
         sns.set_theme(style="ticks", context="paper")
 
@@ -184,12 +184,17 @@ class Simulator:
         """Create and save plot for average coverage"""
         fig, ax = plt.subplots(figsize=(6, 4), dpi=150)
 
-        # Define color mapping for methods (method_name, display_name, color)
-        method_colors = [('DRML', 'DRML', 'black'), ('Score', 'Score', 'lightgray')]
-        
-        for method_name, display_name, color in method_colors:
+        # Define color mapping for methods (method_name, display_name, color, markeredgecolor, markerfacecolor)
+        method_styles = [
+            ("DRML", "DRML", "black", "black", "black"),
+            ("Score", "Score", "lightgray", "black", "lightgray"),
+        ]
+
+        for method_name, display_name, color, edgecolor, facecolor in method_styles:
             if method_name in coverage_summary["method"].values:
-                method_data = coverage_summary[coverage_summary["method"] == method_name]
+                method_data = coverage_summary[
+                    coverage_summary["method"] == method_name
+                ]
                 ax.plot(
                     method_data["n_samples"],
                     method_data["coverage"],
@@ -198,42 +203,50 @@ class Simulator:
                     markersize=6,
                     linewidth=2,
                     color=color,
+                    markerfacecolor=facecolor,
+                    markeredgecolor=edgecolor,
+                    markeredgewidth=1.5 if method_name == "Score" else 1.0,
                 )
 
         # Set y-axis limits conditionally
         if set_coverage_ylim:
             ax.set_ylim(0, 1)
-        
-        ax.axhline(y=0.95, color="red", linestyle="--", linewidth=1.5, label="0.95 Nominal level")
+
+        ax.axhline(
+            y=0.95,
+            color="red",
+            linestyle="--",
+            linewidth=1,
+            label="0.95 Nominal level",
+            alpha=0.5,
+        )
 
         # Customize the plot with seaborn styling
         ax.set_xlabel("Sample size", fontsize=12)
         ax.set_ylabel("Average coverage", fontsize=12)
-        ax.set_title(title, fontsize=10, fontweight='bold')
-        ax.legend(title="Method", bbox_to_anchor=(1, 1), loc='upper left', fontsize=10)
-        ax.tick_params(axis='both', which='major', labelsize=10)
-        
-        # Remove top and right spines for cleaner look
+        ax.legend(title="Method", bbox_to_anchor=(1, 1), loc="upper left", fontsize=10)
+        ax.tick_params(axis="both", which="major", labelsize=10)
+
         sns.despine(ax=ax)
-        
-        # Add grid for better readability
-        ax.grid(True, which='major', linestyle='--', linewidth=0.5, color='gray')
-
-        # Ensure tight layout
+        ax.grid(True, which="major", linestyle="--", linewidth=0.5, color="gray")
         plt.tight_layout()
-
-        # Save the plot with tight layout to include legend
-        plt.savefig(f"{self.output_dir}/average_coverage_{file_prefix}.png", bbox_inches='tight', dpi=150)
+        plt.savefig(
+            f"{self.output_dir}/average_coverage_{file_prefix}.png",
+            bbox_inches="tight",
+            dpi=150,
+        )
         plt.close()
 
     def _create_length_plot(self, length_summary, title, file_prefix):
         """Create and save plot for median length"""
         fig, ax = plt.subplots(figsize=(6, 4), dpi=150)
 
-        # Define color mapping for methods (method_name, display_name, color)
-        method_colors = [('DRML', 'DRML', 'black'), ('Score', 'Score', 'lightgray')]
-        
-        for method_name, display_name, color in method_colors:
+        method_styles = [
+            ("DRML", "DRML", "black", "black", "black"),
+            ("Score", "Score", "lightgray", "black", "lightgray"),
+        ]
+
+        for method_name, display_name, color, edgecolor, facecolor in method_styles:
             if method_name in length_summary["method"].values:
                 method_data = length_summary[length_summary["method"] == method_name]
                 ax.plot(
@@ -244,26 +257,24 @@ class Simulator:
                     markersize=6,
                     linewidth=2,
                     color=color,
+                    markerfacecolor=facecolor,
+                    markeredgecolor=edgecolor,
+                    markeredgewidth=1.5 if method_name == "Score" else 1.0,
                 )
 
-        # Customize the plot with seaborn styling
         ax.set_xlabel("Sample size", fontsize=12)
         ax.set_ylabel("Median length", fontsize=12)
-        ax.set_title(title, fontsize=10, fontweight='bold')
-        ax.legend(title="Method", bbox_to_anchor=(1, 1), loc='upper left', fontsize=10)
-        ax.tick_params(axis='both', which='major', labelsize=10)
-        
-        # Remove top and right spines for cleaner look
+        ax.legend(title="Method", bbox_to_anchor=(1, 1), loc="upper left", fontsize=10)
+        ax.tick_params(axis="both", which="major", labelsize=10)
+
         sns.despine(ax=ax)
-        
-        # Add grid for better readability
-        ax.grid(True, which='major', linestyle='--', linewidth=0.5, color='gray')
-
-        # Ensure tight layout
+        ax.grid(True, which="major", linestyle="--", linewidth=0.5, color="gray")
         plt.tight_layout()
-
-        # Save the plot with tight layout to include legend
-        plt.savefig(f"{self.output_dir}/median_length_{file_prefix}.png", bbox_inches='tight', dpi=150)
+        plt.savefig(
+            f"{self.output_dir}/median_length_{file_prefix}.png",
+            bbox_inches="tight",
+            dpi=150,
+        )
         plt.close()
 
 
@@ -295,7 +306,7 @@ def parse_args():
         "--set_coverage_ylim",
         action="store_true",
         help="Set y-axis limits to (0, 1) for coverage plots",
-        default=False
+        default=False,
     )
     # example usage: --n_samples 150 300 --n_simulations 10 --confidence_set_methods DRML Score
     return parser.parse_args()
