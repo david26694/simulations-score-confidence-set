@@ -214,7 +214,7 @@ class Simulator:
 
         ax.axhline(
             y=0.95,
-            color="red",
+            color="black",
             linestyle="--",
             linewidth=1,
             label="0.95 Nominal level",
@@ -224,7 +224,8 @@ class Simulator:
         # Customize the plot with seaborn styling
         ax.set_xlabel("Sample size", fontsize=12)
         ax.set_ylabel("Average coverage", fontsize=12)
-        ax.legend(title="Method", bbox_to_anchor=(1, 1), loc="upper left", fontsize=10)
+        # Place legend inside the plot, top right
+        ax.legend(title="Method", loc="upper right", fontsize=10)
         ax.tick_params(axis="both", which="major", labelsize=10)
 
         sns.despine(ax=ax)
@@ -264,7 +265,8 @@ class Simulator:
 
         ax.set_xlabel("Sample size", fontsize=12)
         ax.set_ylabel("Median length", fontsize=12)
-        ax.legend(title="Method", bbox_to_anchor=(1, 1), loc="upper left", fontsize=10)
+        # Place legend inside the plot, top right
+        ax.legend(title="Method", loc="upper right", fontsize=10)
         ax.tick_params(axis="both", which="major", labelsize=10)
 
         sns.despine(ax=ax)
