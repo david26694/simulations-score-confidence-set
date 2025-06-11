@@ -237,6 +237,11 @@ class Simulator:
             bbox_inches="tight",
             dpi=150,
         )
+        # Also save as PDF
+        plt.savefig(
+            f"{self.output_dir}/average_coverage_{file_prefix}.pdf",
+            bbox_inches="tight",
+        )
         plt.close()
 
     def _create_length_plot(self, length_summary, title, file_prefix):
@@ -282,6 +287,12 @@ class Simulator:
             bbox_inches="tight",
             dpi=150,
         )
+        # Also save as PDF
+        plt.savefig(
+            f"{self.output_dir}/median_length_{file_prefix}.pdf",
+            bbox_inches="tight",
+        )
+        # Close the plot to free memory
         plt.close()
 
 
