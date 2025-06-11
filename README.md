@@ -1,12 +1,6 @@
 # Simulations Score Confidence Set
 
-This project provides tools for computing confidence sets in econometric models, with a focus on robust and Double Machine Learning (DML) approaches. The main entry point is `src/start.py`.
-
-## Features
-- Abstract and extensible confidence set calculators
-- Robust confidence set computation via score test inversion
-- Standard DML confidence interval computation
-- Modular design for easy extension
+This repository contains scripts to replicate the simulations described in the paper "A note on the properties of the confidence set for the local average treatment effect obtained by inverting the score test".
 
 ---
 
