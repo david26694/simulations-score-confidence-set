@@ -3,6 +3,7 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import seaborn as sns
 from tqdm import tqdm
 
 from src.constants import confidence_set_methods, data_generation_functions
@@ -22,6 +23,9 @@ class Simulator:
         """
         self.output_dir = output_dir
         os.makedirs(output_dir, exist_ok=True)
+
+        # Set professional seaborn style
+        sns.set_theme(style="ticks", context="paper")
 
     def run_single_simulation(self, data, confidence_set_method, dml_model):
         """
@@ -62,6 +66,7 @@ class Simulator:
         n_simulations,
         confidence_set_methods,
         data_generation_name="linear",
+        set_coverage_ylim=False,
     ):
         """
         Run multiple simulations for different sample sizes and instrument strengths
@@ -71,6 +76,7 @@ class Simulator:
             n_simulations: Number of simulations to run for each configuration
             confidence_set_methods: List of confidence set methods to evaluate
             data_generation_name: Name of the data generation function to use
+            set_coverage_ylim: Boolean to set y-axis limits to (0, 1) for coverage plots
 
         Returns:
             None (results are saved to files)
@@ -115,6 +121,7 @@ class Simulator:
                 instrument_decay,
                 title_coverage,
                 title_length,
+                set_coverage_ylim,
             )
 
     def _analyze_and_save_results(
@@ -124,6 +131,7 @@ class Simulator:
         instrument_decay,
         title_coverage,
         title_length,
+        set_coverage_ylim,
     ):
         """
         Analyze simulation results and save summaries and plots
@@ -134,6 +142,7 @@ class Simulator:
             instrument_decay: Whether instrument decay was used
             title_coverage: Title for the coverage plot
             title_length: Title for the length plot
+            set_coverage_ylim: Boolean to set y-axis limits to (0, 1) for coverage plots
 
         Returns:
             None (results are saved to files)
@@ -165,66 +174,125 @@ class Simulator:
 
         # Create and save plots
         self._create_coverage_plot(
-            coverage_summary, instrument_decay, title_coverage, file_prefix
+            coverage_summary, title_coverage, file_prefix, set_coverage_ylim
         )
         self._create_length_plot(length_summary, title_length, file_prefix)
 
     def _create_coverage_plot(
-        self, coverage_summary, instrument_decay, title, file_prefix
+        self, coverage_summary, title, file_prefix, set_coverage_ylim=False
     ):
         """Create and save plot for average coverage"""
-        plt.figure(figsize=(10, 6))
+        fig, ax = plt.subplots(figsize=(6, 4), dpi=150)
 
-        for method in coverage_summary["method"].unique():
-            method_data = coverage_summary[coverage_summary["method"] == method]
-            plt.plot(
-                method_data["n_samples"],
-                method_data["coverage"],
-                label=method,
-                marker="o",
-            )
+        method_styles = [
+            ("DRML", "DRML", "black", "black", "black"),
+            ("Score", "Score", "lightgray", "black", "lightgray"),
+        ]
 
-        # Set y-axis limits based on instrument decay
-        if instrument_decay:
-            plt.ylim(0, 1)
-        else:
-            plt.ylim(0.8, 1)
+        for method_name, display_name, color, edgecolor, facecolor in method_styles:
+            if method_name in coverage_summary["method"].values:
+                method_data = coverage_summary[
+                    coverage_summary["method"] == method_name
+                ]
+                ax.scatter(
+                    method_data["n_samples"],
+                    method_data["coverage"],
+                    label=display_name,
+                    c=color,
+                    edgecolors=edgecolor,
+                    s=50,
+                    alpha=0.7,
+                    marker="o",
+                )
+                ax.plot(
+                    method_data["n_samples"],
+                    method_data["coverage"],
+                    color=color,
+                    linewidth=2,
+                    alpha=0.7,
+                )
 
-        plt.axhline(y=0.95, color="r", linestyle="--", label="0.95 Nominal level")
+        if set_coverage_ylim:
+            ax.set_ylim(0, 1)
 
-        # Customize the plot
-        plt.xlabel("Sample size")
-        plt.ylabel("Average coverage")
-        plt.title(title)
-        plt.legend(title="Method")
-        plt.grid(True)
+        ax.axhline(
+            y=0.95,
+            color="black",
+            linestyle="--",
+            linewidth=1,
+            label="0.95 Nominal level",
+            alpha=0.5,
+        )
 
-        # Save the plot
-        plt.savefig(f"{self.output_dir}/average_coverage_{file_prefix}.png")
+        ax.set_xlabel("Sample size", fontsize=12)
+        ax.set_ylabel("Average coverage", fontsize=12)
+        # Place legend inside the plot, bottom right, without title
+        ax.legend(loc="lower right", fontsize=10)
+        ax.tick_params(axis="both", which="major", labelsize=10)
+        sns.despine(ax=ax)
+        ax.grid(True, which="major", linestyle="--", linewidth=0.5, color="gray")
+        plt.tight_layout()
+        plt.savefig(
+            f"{self.output_dir}/average_coverage_{file_prefix}.png",
+            bbox_inches="tight",
+            dpi=150,
+        )
+        # Also save as PDF
+        plt.savefig(
+            f"{self.output_dir}/average_coverage_{file_prefix}.pdf",
+            bbox_inches="tight",
+        )
         plt.close()
 
     def _create_length_plot(self, length_summary, title, file_prefix):
         """Create and save plot for median length"""
-        plt.figure(figsize=(10, 6))
+        fig, ax = plt.subplots(figsize=(6, 4), dpi=150)
 
-        for method in length_summary["method"].unique():
-            method_data = length_summary[length_summary["method"] == method]
-            plt.plot(
-                method_data["n_samples"],
-                method_data["length"],
-                label=method,
-                marker="o",
-            )
+        method_styles = [
+            ("DRML", "DRML", "black", "black", "black"),
+            ("Score", "Score", "lightgray", "black", "lightgray"),
+        ]
 
-        # Customize the plot
-        plt.xlabel("Sample size")
-        plt.ylabel("Median length")
-        plt.title(title)
-        plt.legend(title="Method")
-        plt.grid(True)
+        for method_name, display_name, color, edgecolor, facecolor in method_styles:
+            if method_name in length_summary["method"].values:
+                method_data = length_summary[length_summary["method"] == method_name]
+                ax.scatter(
+                    method_data["n_samples"],
+                    method_data["length"],
+                    label=display_name,
+                    c=color,
+                    edgecolors=edgecolor,
+                    s=50,
+                    alpha=0.7,
+                    marker="o",
+                )
+                ax.plot(
+                    method_data["n_samples"],
+                    method_data["length"],
+                    color=color,
+                    linewidth=2,
+                    alpha=0.7,
+                )
 
-        # Save the plot
-        plt.savefig(f"{self.output_dir}/median_length_{file_prefix}.png")
+        ax.set_xlabel("Sample size", fontsize=12)
+        ax.set_ylabel("Median length", fontsize=12)
+        # Place legend inside the plot, bottom right, without title
+        ax.legend(loc="lower right", fontsize=10)
+        ax.tick_params(axis="both", which="major", labelsize=10)
+        sns.despine(ax=ax)
+        ax.grid(True, which="major", linestyle="--", linewidth=0.5, color="gray")
+        plt.tight_layout()
+        plt.savefig(
+            f"{self.output_dir}/median_length_{file_prefix}.png",
+            bbox_inches="tight",
+            dpi=150,
+        )
+        # Also save as PDF
+        plt.savefig(
+            f"{self.output_dir}/median_length_{file_prefix}.pdf",
+            bbox_inches="tight",
+        )
+        # Close the plot to free memory
         plt.close()
 
 
@@ -246,6 +314,18 @@ def parse_args():
         default=["DRML", "Score"],
         help="List of confidence set methods",
     )
+    parser.add_argument(
+        "--output_dir",
+        type=str,
+        default="sim_results",
+        help="Directory to save simulation results",
+    )
+    parser.add_argument(
+        "--set_coverage_ylim",
+        action="store_true",
+        help="Set y-axis limits to (0, 1) for coverage plots",
+        default=False,
+    )
     # example usage: --n_samples 150 300 --n_simulations 10 --confidence_set_methods DRML Score
     return parser.parse_args()
 
@@ -258,12 +338,13 @@ def main():
     args = parse_args()
 
     # Initialize and run simulator
-    simulator = Simulator()
+    simulator = Simulator(output_dir=args.output_dir)
     simulator.run_simulations(
         n_samples_list=args.n_samples,
         n_simulations=args.n_simulations,
         confidence_set_methods=args.confidence_set_methods,
         data_generation_name="linear",
+        set_coverage_ylim=args.set_coverage_ylim,
     )
 
 
