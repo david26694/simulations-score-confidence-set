@@ -57,6 +57,7 @@ class Simulator:
         return {
             "coverage": coverage_indicator,
             "length": length,
+            "infinite_length": np.isinf(length) if confidence_set_method == "Score" else False,
             "method": confidence_set_method,
         }
 
@@ -156,12 +157,17 @@ class Simulator:
         length_summary = (
             output_df.groupby(["n_samples", "method"])["length"].median().reset_index()
         )
+        infinite_summary = (
+            output_df.groupby(["n_samples", "method"])["infinite_length"].mean().reset_index()
+        )
 
         # Print summaries
         print("Coverage Summary:")
         print(coverage_summary)
         print("\nLength Summary:")
         print(length_summary)
+        print("\nInfinite Length Fraction Summary:")
+        print(infinite_summary)
 
         # Save summaries as CSV files
         file_prefix = f"{data_generation_name}_instrument_decay_{instrument_decay}"
@@ -171,12 +177,20 @@ class Simulator:
         length_summary.to_csv(
             f"{self.output_dir}/length_summary_{file_prefix}.csv", index=False
         )
+        infinite_summary.to_csv(
+            f"{self.output_dir}/infinite_fraction_summary_{file_prefix}.csv", index=False
+        )
 
         # Create and save plots
         self._create_coverage_plot(
             coverage_summary, title_coverage, file_prefix, set_coverage_ylim
         )
         self._create_length_plot(length_summary, title_length, file_prefix)
+        self._create_infinite_fraction_plot(
+            infinite_summary, 
+            f"Fraction of infinite confidence sets vs sample size by method, {data_generation_name} model, {'weak instrument' if instrument_decay else 'strong instrument'}", 
+            file_prefix
+        )
 
     def _create_coverage_plot(
         self, coverage_summary, title, file_prefix, set_coverage_ylim=False
@@ -290,6 +304,56 @@ class Simulator:
         # Also save as PDF
         plt.savefig(
             f"{self.output_dir}/median_length_{file_prefix}.pdf",
+            bbox_inches="tight",
+        )
+        # Close the plot to free memory
+        plt.close()
+
+    def _create_infinite_fraction_plot(self, infinite_summary, title, file_prefix):
+        """Create and save plot for fraction of infinite confidence sets"""
+        fig, ax = plt.subplots(figsize=(6, 4), dpi=150)
+
+        # Only show Score method since DRML is always bounded
+        method_styles = [
+            ("Score", "Score", "lightgray", "black", "lightgray"),
+        ]
+        
+        for method_name, display_name, color, edgecolor, facecolor in method_styles:
+            if method_name in infinite_summary["method"].values:
+                method_data = infinite_summary[infinite_summary["method"] == method_name]
+                ax.scatter(
+                    method_data["n_samples"],
+                    method_data["infinite_length"],
+                    label=display_name,
+                    c=color,
+                    edgecolors=edgecolor,
+                    s=50,
+                    alpha=0.7,
+                    marker="o",
+                )
+                ax.plot(
+                    method_data["n_samples"],
+                    method_data["infinite_length"],
+                    color=color,
+                    linewidth=2,
+                    alpha=0.7,
+                )
+
+        ax.set_xlabel("Sample size", fontsize=12)
+        ax.set_ylabel("Fraction of infinite confidence sets", fontsize=12)
+        # No legend needed since only Score method is shown
+        ax.tick_params(axis="both", which="major", labelsize=10)
+        sns.despine(ax=ax)
+        ax.grid(True, which="major", linestyle="--", linewidth=0.5, color="gray")
+        plt.tight_layout()
+        plt.savefig(
+            f"{self.output_dir}/infinite_fraction_{file_prefix}.png",
+            bbox_inches="tight",
+            dpi=150,
+        )
+        # Also save as PDF
+        plt.savefig(
+            f"{self.output_dir}/infinite_fraction_{file_prefix}.pdf",
             bbox_inches="tight",
         )
         # Close the plot to free memory
