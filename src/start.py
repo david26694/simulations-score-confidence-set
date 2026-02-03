@@ -57,7 +57,9 @@ class Simulator:
         return {
             "coverage": coverage_indicator,
             "length": length,
-            "infinite_length": np.isinf(length) if confidence_set_method == "Score" else False,
+            "infinite_length": np.isinf(length)
+            if confidence_set_method == "Score"
+            else False,
             "method": confidence_set_method,
         }
 
@@ -158,7 +160,9 @@ class Simulator:
             output_df.groupby(["n_samples", "method"])["length"].median().reset_index()
         )
         infinite_summary = (
-            output_df.groupby(["n_samples", "method"])["infinite_length"].mean().reset_index()
+            output_df.groupby(["n_samples", "method"])["infinite_length"]
+            .mean()
+            .reset_index()
         )
 
         # Print summaries
@@ -178,7 +182,8 @@ class Simulator:
             f"{self.output_dir}/length_summary_{file_prefix}.csv", index=False
         )
         infinite_summary.to_csv(
-            f"{self.output_dir}/infinite_fraction_summary_{file_prefix}.csv", index=False
+            f"{self.output_dir}/infinite_fraction_summary_{file_prefix}.csv",
+            index=False,
         )
 
         # Create and save plots
@@ -187,9 +192,9 @@ class Simulator:
         )
         self._create_length_plot(length_summary, title_length, file_prefix)
         self._create_infinite_fraction_plot(
-            infinite_summary, 
-            f"Fraction of infinite confidence sets vs sample size by method, {data_generation_name} model, {'weak instrument' if instrument_decay else 'strong instrument'}", 
-            file_prefix
+            infinite_summary,
+            f"Fraction of infinite confidence sets vs sample size by method, {data_generation_name} model, {'weak instrument' if instrument_decay else 'strong instrument'}",
+            file_prefix,
         )
 
     def _create_coverage_plot(
@@ -317,10 +322,12 @@ class Simulator:
         method_styles = [
             ("Score", "Score", "lightgray", "black", "lightgray"),
         ]
-        
+
         for method_name, display_name, color, edgecolor, facecolor in method_styles:
             if method_name in infinite_summary["method"].values:
-                method_data = infinite_summary[infinite_summary["method"] == method_name]
+                method_data = infinite_summary[
+                    infinite_summary["method"] == method_name
+                ]
                 ax.scatter(
                     method_data["n_samples"],
                     method_data["infinite_length"],
@@ -390,6 +397,13 @@ def parse_args():
         help="Set y-axis limits to (0, 1) for coverage plots",
         default=False,
     )
+
+    parser.add_argument(
+        "--data_generation_name",
+        type=str,
+        default="linear",
+        help="Name of the data generation function to use (linear or nonlinear)",
+    )
     # example usage: --n_samples 150 300 --n_simulations 10 --confidence_set_methods DRML Score
     return parser.parse_args()
 
@@ -407,7 +421,7 @@ def main():
         n_samples_list=args.n_samples,
         n_simulations=args.n_simulations,
         confidence_set_methods=args.confidence_set_methods,
-        data_generation_name="linear",
+        data_generation_name=args.data_generation_name,
         set_coverage_ylim=args.set_coverage_ylim,
     )
 
