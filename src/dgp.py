@@ -22,6 +22,8 @@ def generate_weakiv_data(n_samples, slope=0, instrument_strength=5, u_std=1):
     Y = slope * A + 2 * np.sign(u)
     return {"Y": Y, "Z": Z, "A": A, "X": X, "true_ATE": slope}
 
+def odd_root(x, k):
+    return np.sign(x) * np.abs(x) ** (1/k)
 
 def generate_nonlinear_weakiv_data(n_samples, slope=0, instrument_strength=5, u_std=1):
     """
@@ -38,7 +40,7 @@ def generate_nonlinear_weakiv_data(n_samples, slope=0, instrument_strength=5, u_
     u = np.random.laplace(0, u_std, size=n_samples)
     X = np.random.laplace(0, 1, size=n_samples)
     Z = np.random.binomial(1, 0.5, size=n_samples)
-    A = instrument_strength * Z * np.power(X, 5) + u
+    A = instrument_strength * Z * (odd_root(X, 5) + 1)  + u
     A = np.array(A > 0, dtype=int)
-    Y = slope * A + 2 * np.sin(np.pi * u / 2)
+    Y = slope * A + 2 * np.sign(u)
     return {"Y": Y, "Z": Z, "A": A, "X": X, "true_ATE": slope}
