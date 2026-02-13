@@ -245,8 +245,8 @@ class Simulator:
 
         ax.set_xlabel("Sample size", fontsize=12)
         ax.set_ylabel("Average coverage", fontsize=12)
-        # Place legend inside the plot, bottom right, without title
-        ax.legend(loc="lower right", fontsize=10)
+        # Place legend outside the plot, top right
+        ax.legend(loc="upper left", bbox_to_anchor=(1, 1), fontsize=10)
         ax.tick_params(axis="both", which="major", labelsize=10)
         sns.despine(ax=ax)
         ax.grid(True, which="major", linestyle="--", linewidth=0.5, color="gray")
@@ -295,8 +295,8 @@ class Simulator:
 
         ax.set_xlabel("Sample size", fontsize=12)
         ax.set_ylabel("Median length", fontsize=12)
-        # Place legend inside the plot, bottom right, without title
-        ax.legend(loc="lower right", fontsize=10)
+        # Place legend outside the plot, top right
+        ax.legend(loc="upper left", bbox_to_anchor=(1, 1), fontsize=10)
         ax.tick_params(axis="both", which="major", labelsize=10)
         sns.despine(ax=ax)
         ax.grid(True, which="major", linestyle="--", linewidth=0.5, color="gray")
