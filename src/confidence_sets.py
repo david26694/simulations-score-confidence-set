@@ -4,7 +4,7 @@ import numpy as np
 from linearmodels import IV2SLS
 from ivmodels import KClass
 from ivmodels.summary import Summary
-from utils import  confidence_sets_to_tuples
+from src.utils import  confidence_sets_to_tuples
 
 
 class ConfidenceSetCalculator(ABC):
