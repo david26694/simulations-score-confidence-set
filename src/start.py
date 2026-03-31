@@ -57,9 +57,7 @@ class Simulator:
         return {
             "coverage": coverage_indicator,
             "length": length,
-            "infinite_length": np.isinf(length)
-            if confidence_set_method == "Score"
-            else False,
+            "infinite_length": np.isinf(length),
             "method": confidence_set_method,
         }
 
@@ -206,6 +204,7 @@ class Simulator:
         method_styles = [
             ("DRML", "DRML", "black", "black", "black"),
             ("Score", "Score", "lightgray", "black", "lightgray"),
+            ("AR", "AR", "gray", "black", "gray"),
         ]
 
         for method_name, display_name, color, edgecolor, facecolor in method_styles:
@@ -270,6 +269,7 @@ class Simulator:
         method_styles = [
             ("DRML", "DRML", "black", "black", "black"),
             ("Score", "Score", "lightgray", "black", "lightgray"),
+            ("AR", "AR", "gray", "black", "gray"),
         ]
 
         for method_name, display_name, color, edgecolor, facecolor in method_styles:
@@ -318,9 +318,9 @@ class Simulator:
         """Create and save plot for fraction of infinite confidence sets"""
         fig, ax = plt.subplots(figsize=(6, 4), dpi=150)
 
-        # Only show Score method since DRML is always bounded
         method_styles = [
             ("Score", "Score", "lightgray", "black", "lightgray"),
+            ("AR", "AR", "gray", "black", "gray"),
         ]
 
         for method_name, display_name, color, edgecolor, facecolor in method_styles:
@@ -348,7 +348,7 @@ class Simulator:
 
         ax.set_xlabel("Sample size", fontsize=12)
         ax.set_ylabel("Fraction of infinite confidence sets", fontsize=12)
-        # No legend needed since only Score method is shown
+        ax.legend(loc="upper left", bbox_to_anchor=(1, 1), fontsize=10)
         ax.tick_params(axis="both", which="major", labelsize=10)
         sns.despine(ax=ax)
         ax.grid(True, which="major", linestyle="--", linewidth=0.5, color="gray")
@@ -382,7 +382,7 @@ def parse_args():
         "--confidence_set_methods",
         type=str,
         nargs="+",
-        default=["DRML", "Score"],
+        default=["DRML", "Score", "AR"],
         help="List of confidence set methods",
     )
     parser.add_argument(

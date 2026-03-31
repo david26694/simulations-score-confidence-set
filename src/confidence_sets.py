@@ -2,6 +2,9 @@ from abc import ABC, abstractmethod
 
 import numpy as np
 from linearmodels import IV2SLS
+from ivmodels import KClass
+from ivmodels.summary import Summary
+from src.utils import  confidence_sets_to_tuples
 
 
 class ConfidenceSetCalculator(ABC):
@@ -62,3 +65,24 @@ class DMLConfidenceSetCalculator(ConfidenceSetCalculator):
         return [
             (dml_confidence_set["2.5 %"].iloc[0], dml_confidence_set["97.5 %"].iloc[0])
         ]
+
+class ARConfidenceSetCalculator(ConfidenceSetCalculator):
+
+    @staticmethod
+    def _fit_ar_summary(data, alpha):
+        kclass_model = KClass()
+
+        kclass_summary = Summary(kclass_model, "anderson-rubin", alpha=alpha).fit(
+            X=data['A'].reshape(-1, 1),
+            y=data['Y'],
+            Z=data['Z'].reshape(-1, 1),
+            C=data['X'].reshape(-1, 1)
+        )
+
+        return kclass_summary
+
+    def get_confidence_set(self, data, dml_model, alpha=0.05):
+        kclass_summary = self._fit_ar_summary(data, alpha)
+        conf_set = confidence_sets_to_tuples(kclass_summary.coefficient_table_.confidence_sets[1])
+
+        return conf_set
